@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "color.h"
 #include "fragment.h"
+#include "noise.h"
 
 
 struct Face {
@@ -26,10 +27,27 @@ std::array<std::array<float, SCREEN_WIDTH>, SCREEN_HEIGHT> zbuffer;
 std::array<std::array<float, SCREEN_WIDTH>, SCREEN_HEIGHT> zbufferToPrint;
 
 
-void init() {
-    SDL_Init(SDL_INIT_VIDEO);
+bool init() {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::cerr << "Error: Failed to initialize SDL: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
     window = SDL_CreateWindow("Software Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        std::cerr << "Error: Failed to create SDL window: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        std::cerr << "Error: Failed to create SDL renderer: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    setupNoise();
+
+    return true;
 }
 
 void setColor(const Color& color) {

@@ -5,7 +5,13 @@
 #include <fstream>
 #include "gl.h"
 
-bool loadOBJ(const std::string& path, std::vector<glm::vec3>& out_vertices, std::vector<Face>& out_faces) {
+bool loadOBJ(
+        const std::string& path,
+        std::vector<glm::vec3>& out_vertices,
+        std::vector<Face>& out_faces,
+        std::vector<glm::vec3>& out_normals,
+        std::vector<glm::vec3>& out_texcords)
+        {
     // Open the OBJ file
     std::ifstream file(path);
     if (!file.is_open()) {
@@ -44,6 +50,14 @@ bool loadOBJ(const std::string& path, std::vector<glm::vec3>& out_vertices, std:
             }
             faces.push_back(face);
         }
+        else if (type == "vt") {
+            glm::vec3 tex;
+            iss >> tex.x >> tex.y >> tex.z;
+        }
+        else if (type == "vn") {
+            glm::vec3 normal;
+            iss >> normal.x >> normal.y >> normal.z;
+        }
     }
 
     // Close the file
@@ -52,5 +66,6 @@ bool loadOBJ(const std::string& path, std::vector<glm::vec3>& out_vertices, std:
     // Return the extracted vertices and faces
     out_vertices = vertices;
     out_faces = faces;
+
     return true;
 }

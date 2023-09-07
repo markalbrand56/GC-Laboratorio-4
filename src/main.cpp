@@ -51,7 +51,7 @@ void render(const std::vector<glm::vec3>& vertices) {
     // Fragments -> colors
 
     for (Fragment fragment : fragments) {
-        point(fragmentShader(fragment));
+        point(sunFragmentShader(fragment));
     }
 }
 
@@ -72,13 +72,17 @@ std::vector<glm::vec3> setupVertexFromObject(const std::vector<glm::vec3>& verti
 }
 
 int main(int argc, char** argv) {
-    init();
+    if (!init()) {
+        return 1;
+    }
 
     std::vector<glm::vec3> sphereVertices;
     std::vector<Face> sphereFaces;
+    std::vector<glm::vec3> sphereNormals;
+    std::vector<glm::vec3> sphereTexCoords;
 
     // Load the OBJ file
-    bool success = loadOBJ("../model/sphere.obj", sphereVertices, sphereFaces);
+    bool success = loadOBJ("../model/sphere.obj", sphereVertices, sphereFaces, sphereNormals, sphereTexCoords);
     if (!success) {
         std::cerr << "Error loading OBJ file!" << std::endl;
         return 1;
@@ -86,8 +90,13 @@ int main(int argc, char** argv) {
 
     std::vector<glm::vec3> vertexBufferObject = setupVertexFromObject(sphereVertices, sphereFaces);
 
+    Uint32 frameStart, frameTime;
+    std::string title = "FPS: ";
+    float a = 45.0f;
+
     bool running = true;
     while (running) {
+        frameStart = SDL_GetTicks();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -98,10 +107,15 @@ int main(int argc, char** argv) {
         // Camera
         camera.cameraPosition = glm::vec3(0.0f, 0.0f, 1.5f);
         camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-        camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);  // Mira hacia abajo porque el modelo está al revés
+        camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
         // Create uniform
-        uniform.model = createModelMatrix();
+        glm::vec3 translationVector(0.0f, 0.0f, 0.0f);
+        glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
+        glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
+
+        a += 2.0f;
+        uniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);
         uniform.view = createViewMatrix(camera);
         uniform.projection = createProjectionMatrix();
         uniform.viewport = createViewportMatrix();
@@ -116,6 +130,15 @@ int main(int argc, char** argv) {
 
         // Delay to limit the frame rate
         SDL_Delay(1000 / 60);
+
+        frameTime = SDL_GetTicks() - frameStart;
+
+        // Calculate frames per second and update window title
+        if (frameTime > 0) {
+            std::ostringstream titleStream;
+            titleStream << "FPS: " << 1000.0 / frameTime;  // Milliseconds to seconds
+            SDL_SetWindowTitle(window, titleStream.str().c_str());
+        }
     }
 
     SDL_DestroyRenderer(renderer);

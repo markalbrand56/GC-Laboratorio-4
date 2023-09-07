@@ -11,6 +11,8 @@ find_package(glm CONFIG REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 link_directories(${SDL2_LIB_DIR})
 
-add_executable(Laboratorio_4 src/main.cpp)
+add_executable(Laboratorio_4 src/main.cpp
+        src/noise.h
+        src/FastNoise.h)
 
 target_link_libraries(Laboratorio_4 SDL2main SDL2 glm::glm)

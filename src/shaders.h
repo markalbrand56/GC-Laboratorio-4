@@ -6,19 +6,37 @@
 #include "fragment.h"
 #include "uniforms.h"
 #include "gl.h"
+#include "FastNoise.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
 #include <random>
 
-Vertex vertexShader(const Vertex& vertex, const Uniforms& u) {
-    glm::vec4 v = glm::vec4(vertex.position.x, vertex.position.y, vertex.position.z, 1);
-    glm::vec4 r = u.viewport * u.projection * u.view * u.model * v;
+Vertex vertexShader(const Vertex& vertex, const Uniforms& uniforms) {
+    // Apply transformations to the input vertex using the matrices from the uniforms
+    glm::vec4 clipSpaceVertex = uniforms.projection * uniforms.view * uniforms.model * glm::vec4(vertex.position, 1.0f);
 
+    // Perspective divide
+    glm::vec3 ndcVertex = glm::vec3(clipSpaceVertex) / clipSpaceVertex.w;
+
+    // Apply the viewport transform
+    glm::vec4 screenVertex = uniforms.viewport * glm::vec4(ndcVertex, 1.0f);
+
+    // Transform the normal
+    glm::vec3 transformedNormal = glm::mat3(uniforms.model) * vertex.normal;
+    transformedNormal = glm::normalize(transformedNormal);
+
+    glm::vec3 transformedWorldPosition = glm::vec3(uniforms.model * glm::vec4(vertex.position, 1.0f));
+
+    // Return the transformed vertex as a vec3
     return Vertex{
-        glm::vec3(r.x/r.w, r.y/r.w, r.z/r.w),
-        vertex.color
+            glm::vec3(screenVertex),
+            vertex.color,
+            transformedNormal,
+            vertex.tex,
+            transformedWorldPosition,
+            vertex.position
     };
-};
+}
 
 std::vector<std::vector<Vertex>> primitiveAssembly (
     const std::vector<Vertex>& transformedVertices
@@ -42,5 +60,36 @@ std::vector<std::vector<Vertex>> primitiveAssembly (
 
 Fragment fragmentShader(Fragment fragment) {
     fragment.color = fragment.color * fragment.intensity;
+    return fragment;
+}
+
+Fragment sunFragmentShader(Fragment& fragment) {
+    // Define the colors for the ocean, the ground, and the spots with direct values
+    glm::vec3 spotColorGreen = glm::vec3(0.133f, 0.545f, 0.133f);  // Forest green
+    glm::vec3 spotColorBlue = glm::vec3(0.0f, 0.0f, 1.0f);  // Blue
+
+    // Sample the Perlin noise map at the fragment's position
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.z);
+    uv = glm::clamp(uv, 0.0f, 1.0f);  // make sure the uv coordinates are in [0, 1] range
+
+    // Set up the noise generator
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    float ox = 1200.0f;
+    float oy = 3000.0f;
+    float z = 1000.0f;
+    // Generate the noise value
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
+
+    // Decide the spot color based on the noise value
+    glm::vec3 c = (noiseValue < 0.5f) ? spotColorBlue : spotColorGreen;
+
+    // Interpolate between the ocean color and the ground color based on the water/ground transition
+    // Then, interpolate between this color and the spot color
+
+    // Convert glm::vec3 color to your Color class
+    fragment.color = Color(c.r, c.g, c.b);
+
     return fragment;
 }

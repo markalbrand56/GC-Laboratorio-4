@@ -57,11 +57,16 @@ std::vector<Fragment> triangle(const Vertex& a, const Vertex& b, const Vertex& c
                 glm::vec3 lightDir = glm::normalize(lightPos - a.position);  // Flat shading
                 float intensity = glm::dot(normal, lightDir);
 
+                glm::vec3 worldPos = a.worldPos * barycentric.x + b.worldPos * barycentric.y + c.worldPos * barycentric.z;
+                glm::vec3 originalPos = a.originalPos * barycentric.x + b.originalPos * barycentric.y + c.originalPos * barycentric.z;
+
                 // Create the fragment
                 Fragment fragment = Fragment{
                         glm::vec3(x, y, z),
                         a.color * barycentric.x + b.color * barycentric.y + c.color * barycentric.z,
-                        intensity
+                        intensity,
+                        worldPos,
+                        originalPos
                 };
 
                 // Add the fragment to the list
