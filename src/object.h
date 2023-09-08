@@ -56,23 +56,24 @@ bool loadOBJ(
             // Process face data
         else if (type == "f") {
             Face face;
-            std::string vertexStr;
-            while (iss >> vertexStr) {
-                std::array<int, 3> vertexIndices;
-                std::replace(vertexStr.begin(), vertexStr.end(), '/', ' ');
-                std::istringstream viss(vertexStr);
-                viss >> vertexIndices[0] >> vertexIndices[1] >> vertexIndices[2];
-                face.vertexIndices.push_back(vertexIndices);
+            char slash;
+            for (int i = 0; i < 3; ++i) {
+                iss >> face.vertexIndices[i] >> slash >> face.texIndices[i] >> slash >> face.normalIndices[i];
+                face.vertexIndices[i] -= 1;
+                face.texIndices[i] -= 1;
+                face.normalIndices[i] -= 1;
             }
             faces.push_back(face);
         }
         else if (type == "vt") {
             glm::vec3 tex;
             iss >> tex.x >> tex.y >> tex.z;
+            out_texcords.push_back(tex);
         }
         else if (type == "vn") {
             glm::vec3 normal;
             iss >> normal.x >> normal.y >> normal.z;
+            out_normals.push_back(normal);
         }
     }
 

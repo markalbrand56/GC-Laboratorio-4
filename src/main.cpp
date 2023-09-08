@@ -11,6 +11,7 @@
 Camera camera;
 std::vector<Model> models;
 
+using namespace std;
 void render() {
     for (int i = 0; i < models.size(); i++) {
         Model model = models[i];
@@ -21,11 +22,12 @@ void render() {
         // vertex -> trasnformedVertices
         std::vector<Vertex> transformedVertices;
 
-        for (int i = 0; i < model.vertices.size(); i+=2) {
+        for (int i = 0; i < model.vertices.size(); i+=3) {
             glm::vec3 v = model.vertices[i];
-            glm::vec3 c = model.vertices[i + 1];
+            glm::vec3 n = model.vertices[i+1];
+            glm::vec3 t = model.vertices[i+2];
 
-            Vertex vertex = {v, Color(255, 255, 255)};
+            Vertex vertex = Vertex{v, n, t};
 
             Vertex transformedVertex = vertexShader(vertex, uniform);
             transformedVertices.push_back(transformedVertex);
@@ -34,6 +36,7 @@ void render() {
         // 2. Primitive Assembly
         // transformedVertices -> triangles
         std::vector<std::vector<Vertex>> triangles = primitiveAssembly(transformedVertices);
+
 
         // 3. Rasterize
         // triangles -> Fragments
@@ -51,6 +54,7 @@ void render() {
                     rasterizedTriangle.end()
             );
         }
+
 
         // 4. Fragment Shader
         // Fragments -> colors
@@ -77,16 +81,26 @@ void render() {
     }
 }
 
-std::vector<glm::vec3> setupVertexFromObject(const std::vector<glm::vec3>& vertices, const std::vector<Face>& faces){
+std::vector<glm::vec3> setupVertexFromObject(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec3>& texCoords){
     std::vector<glm::vec3> vertexBufferObject;
 
-    for (const Face& face : faces) {
-        for (const std::array<int, 3>& vertexIndices : face.vertexIndices) {
-            glm::vec3 vertex = vertices[vertexIndices[0] - 1];
-            glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+    for (const auto& face : faces)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            // Get the vertex position
+            glm::vec3 vertexPosition = vertices[face.vertexIndices[i]];
 
-            vertexBufferObject.push_back(vertex);
-            vertexBufferObject.push_back(color);
+            // Get the normal for the current vertex
+            glm::vec3 vertexNormal = normals[face.normalIndices[i]];
+
+            // Get the texture for the current vertex
+            glm::vec3 vertexTexture = texCoords[face.texIndices[i]];
+
+            // Add the vertex position and normal to the vertex array
+            vertexBufferObject.push_back(vertexPosition);
+            vertexBufferObject.push_back(vertexNormal);
+            vertexBufferObject.push_back(vertexTexture);
         }
     }
 
@@ -122,9 +136,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::vector<glm::vec3> planetVBO = setupVertexFromObject(planetVertices, planetFaces);
-    std::vector<glm::vec3> moonVBO = setupVertexFromObject(moonVertices, moonFaces);
+    cout << "Loaded OBJ file" << endl;
+    std::vector<glm::vec3> planetVBO = setupVertexFromObject(planetFaces, planetVertices, planetNormals, planetTexCoords);
+    std::vector<glm::vec3> moonVBO = setupVertexFromObject(moonFaces, moonVertices, moonNormals, moonTexCoords);
 
+    cout << "Setup VBO" << endl;
     Uint32 frameStart, frameTime;
     std::string title = "FPS: ";
     float a = 45.0f;
@@ -161,12 +177,14 @@ int main(int argc, char** argv) {
     Model planetModel;
     planetModel.vertices = planetVBO;
     planetModel.uniforms = planetUniform;
-    planetModel.shader = Shader::Jupiter;
+    planetModel.shader = Shader::Sun;
 
     Model moonModel;
     moonModel.vertices = moonVBO;
     moonModel.uniforms = moonUniform;
     moonModel.shader = Shader::Moon;
+
+    cout << "Starting loop" << endl;
 
     float speed = 10.0f;
     bool running = true;

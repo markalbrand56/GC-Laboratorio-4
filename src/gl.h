@@ -13,7 +13,9 @@
 
 
 struct Face {
-    std::vector<std::array<int, 3>> vertexIndices;
+    std::array<int, 3> vertexIndices;
+    std::array<int, 3> normalIndices;
+    std::array<int, 3> texIndices;
 };
 
 SDL_Window* window = nullptr;

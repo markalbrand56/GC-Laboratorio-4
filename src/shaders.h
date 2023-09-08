@@ -30,7 +30,6 @@ Vertex vertexShader(const Vertex& vertex, const Uniforms& uniforms) {
     // Return the transformed vertex as a vec3
     return Vertex{
             glm::vec3(screenVertex),
-            vertex.color,
             transformedNormal,
             vertex.tex,
             transformedWorldPosition,
