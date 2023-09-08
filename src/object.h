@@ -5,11 +5,19 @@
 #include <fstream>
 #include "gl.h"
 
+enum class Shader {
+    Earth,
+    Sun,
+    Moon,
+    Pluto,
+};
+
 class Model {
 public:
     glm::mat4 modelMatrix;
     std::vector<glm::vec3> vertices;
     Uniforms uniforms;
+    Shader shader;
 };
 
 

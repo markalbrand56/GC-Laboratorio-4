@@ -56,12 +56,15 @@ void render() {
         // Fragments -> colors
 
         for (Fragment fragment : fragments) {
-            switch (i) {
-                case 0:
+            switch (model.shader) {
+                case Shader::Earth:
+                    point(earthFragmentShader(fragment));
+                    break;
+                case Shader::Sun:
                     point(sunFragmentShader(fragment));
                     break;
-                case 1:
-                    point(earthFragmentShader(fragment));
+                default:
+                    point(fragmentShader(fragment));
                     break;
             }
         }
@@ -90,31 +93,31 @@ int main(int argc, char** argv) {
     }
 
     // Sol
-    std::vector<glm::vec3> sunVertices;
-    std::vector<Face> sunFaces;
-    std::vector<glm::vec3> sunNormals;
-    std::vector<glm::vec3> sunTexCoords;
+    std::vector<glm::vec3> planetVertices;
+    std::vector<Face> planetFaces;
+    std::vector<glm::vec3> planetNormals;
+    std::vector<glm::vec3> planetTexCoords;
 
     // Uranus
-    std::vector<glm::vec3> uranusVertices;
-    std::vector<Face> uranusFaces;
-    std::vector<glm::vec3> uranusNormals;
-    std::vector<glm::vec3> uranusTexCoords;
+    std::vector<glm::vec3> moonVertices;
+    std::vector<Face> moonFaces;
+    std::vector<glm::vec3> moonNormals;
+    std::vector<glm::vec3> moonTexCoords;
 
     // Load the OBJ file
-    bool success = loadOBJ("../model/sphere.obj", sunVertices, sunFaces, sunNormals, sunTexCoords);
+    bool success = loadOBJ("../model/sphere.obj", planetVertices, planetFaces, planetNormals, planetTexCoords);
     if (!success) {
         std::cerr << "Error loading OBJ file!" << std::endl;
         return 1;
     }
-    success = loadOBJ("../model/sphere.obj", uranusVertices, uranusFaces, uranusNormals, uranusTexCoords);
+    success = loadOBJ("../model/sphere.obj", moonVertices, moonFaces, moonNormals, moonTexCoords);
     if (!success) {
         std::cerr << "Error loading OBJ file!" << std::endl;
         return 1;
     }
 
-    std::vector<glm::vec3> sunVBO = setupVertexFromObject(sunVertices, sunFaces);
-    std::vector<glm::vec3> uranusVBO = setupVertexFromObject(uranusVertices, uranusFaces);
+    std::vector<glm::vec3> planetVBO = setupVertexFromObject(planetVertices, planetFaces);
+    std::vector<glm::vec3> moonVBO = setupVertexFromObject(moonVertices, moonFaces);
 
     Uint32 frameStart, frameTime;
     std::string title = "FPS: ";
@@ -126,36 +129,38 @@ int main(int argc, char** argv) {
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    // Create Sun uniform
-    Uniforms uniform;
+    // Create Sun planetUniform
+    Uniforms planetUniform;
 
     glm::vec3 translationVector(0.0f, 0.0f, 0.0f);
     glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
     glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
 
-    uniform.view = createViewMatrix(camera);
-    uniform.projection = createProjectionMatrix();
-    uniform.viewport = createViewportMatrix();
+    planetUniform.view = createViewMatrix(camera);
+    planetUniform.projection = createProjectionMatrix();
+    planetUniform.viewport = createViewportMatrix();
 
-    // Create Uranus uniform
-    Uniforms uranusUniform;
+    // Create Uranus planetUniform
+    Uniforms moonUniform;
 
     glm::vec3 translationVectorUranus(0.0f, 1.0f, 0.0f);
     glm::vec3 rotationAxisUranus(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
     glm::vec3 scaleFactorUranus(0.5f, 0.5f, 0.5f);
 
-    uranusUniform.view = createViewMatrix(camera);
-    uranusUniform.projection = createProjectionMatrix();
-    uranusUniform.viewport = createViewportMatrix();
+    moonUniform.view = createViewMatrix(camera);
+    moonUniform.projection = createProjectionMatrix();
+    moonUniform.viewport = createViewportMatrix();
 
     // Create model
-    Model sunModel;
-    sunModel.vertices = sunVBO;
-    sunModel.uniforms = uniform;
+    Model planetModel;
+    planetModel.vertices = planetVBO;
+    planetModel.uniforms = planetUniform;
+    planetModel.shader = Shader::Sun;
 
-    Model uranusModel;
-    uranusModel.vertices = uranusVBO;
-    uranusModel.uniforms = uranusUniform;
+    Model moonModel;
+    moonModel.vertices = moonVBO;
+    moonModel.uniforms = moonUniform;
+    moonModel.shader = Shader::Earth;
 
     bool running = true;
     while (running) {
@@ -171,15 +176,15 @@ int main(int argc, char** argv) {
         b += 30.0f;
 
         // Sun
-        uniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);
-        sunModel.modelMatrix = uniform.model;
+        planetUniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);
+        planetModel.modelMatrix = planetUniform.model;
 
         // Uranus
-        uranusUniform.model = createModelMatrix(translationVectorUranus, scaleFactorUranus, rotationAxisUranus, b);
-        uranusModel.modelMatrix = uranusUniform.model;
+        moonUniform.model = createModelMatrix(translationVectorUranus, scaleFactorUranus, rotationAxisUranus, b);
+        moonModel.modelMatrix = moonUniform.model;
 
-        models.push_back(sunModel);
-        models.push_back(uranusModel);
+        models.push_back(planetModel);
+        models.push_back(moonModel);
 
         clear();
 
