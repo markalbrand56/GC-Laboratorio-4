@@ -136,11 +136,9 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    cout << "Loaded OBJ file" << endl;
     std::vector<glm::vec3> planetVBO = setupVertexFromObject(planetFaces, planetVertices, planetNormals, planetTexCoords);
     std::vector<glm::vec3> moonVBO = setupVertexFromObject(moonFaces, moonVertices, moonNormals, moonTexCoords);
 
-    cout << "Setup VBO" << endl;
     Uint32 frameStart, frameTime;
     std::string title = "FPS: ";
     float a = 45.0f;
@@ -165,9 +163,8 @@ int main(int argc, char** argv) {
     // Create Uranus planetUniform
     Uniforms moonUniform;
 
-    glm::vec3 translationVectorUranus(0.0f, 1.0f, 0.0f);
-    glm::vec3 rotationAxisUranus(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
-    glm::vec3 scaleFactorUranus(0.27f, 0.27f, 0.27f);
+    glm::vec3 rotationAxisMoon(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
+    glm::vec3 scaleFactorMoon(0.27f, 0.27f, 0.27f);
 
     moonUniform.view = createViewMatrix(camera);
     moonUniform.projection = createProjectionMatrix();
@@ -177,7 +174,7 @@ int main(int argc, char** argv) {
     Model planetModel;
     planetModel.vertices = planetVBO;
     planetModel.uniforms = planetUniform;
-    planetModel.shader = Shader::Sun;
+    planetModel.shader = Shader::Jupiter;
 
     Model moonModel;
     moonModel.vertices = moonVBO;
@@ -188,6 +185,9 @@ int main(int argc, char** argv) {
 
     float speed = 10.0f;
     bool running = true;
+    float moonOrbitAngle = 0.0f;
+    float distanceToPlanet = 1.0f;
+
     while (running) {
         frameStart = SDL_GetTicks();
         SDL_Event event;
@@ -215,8 +215,15 @@ int main(int argc, char** argv) {
         planetUniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);
         planetModel.modelMatrix = planetUniform.model;
 
-        // Uranus
-        moonUniform.model = createModelMatrix(translationVectorUranus, scaleFactorUranus, rotationAxisUranus, b);
+        // Moon
+        // move the moon around the planet on the x and y axis
+        moonOrbitAngle += 2.0f;
+        glm::vec3 translationVectorMoon(
+                distanceToPlanet * cos(glm::radians(moonOrbitAngle)),
+                0.0f,
+                distanceToPlanet * sin(glm::radians(moonOrbitAngle))
+        );
+        moonUniform.model = createModelMatrix(translationVectorMoon, scaleFactorMoon, rotationAxisMoon, b);
         moonModel.modelMatrix = moonUniform.model;
 
         models.push_back(planetModel);
