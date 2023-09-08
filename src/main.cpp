@@ -66,6 +66,9 @@ void render() {
                 case Shader::Moon:
                     point(moonFragmentShader(fragment));
                     break;
+                case Shader::Jupiter:
+                    point(jupiterFragmentShader(fragment));
+                    break;
                 default:
                     point(fragmentShader(fragment));
                     break;
@@ -158,13 +161,14 @@ int main(int argc, char** argv) {
     Model planetModel;
     planetModel.vertices = planetVBO;
     planetModel.uniforms = planetUniform;
-    planetModel.shader = Shader::Sun;
+    planetModel.shader = Shader::Jupiter;
 
     Model moonModel;
     moonModel.vertices = moonVBO;
     moonModel.uniforms = moonUniform;
     moonModel.shader = Shader::Moon;
 
+    float speed = 10.0f;
     bool running = true;
     while (running) {
         frameStart = SDL_GetTicks();
@@ -173,10 +177,21 @@ int main(int argc, char** argv) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_LEFT:
+                        speed += -1.0f;
+                        break;
+                    case SDLK_RIGHT:
+                        speed += 1.0f;
+                        break;
+                }
+            }
         }
 
-        a += 15.0f;
-        b += 30.0f;
+        a += speed;
+        b += speed * 1.5;
 
         // Sun
         planetUniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);
