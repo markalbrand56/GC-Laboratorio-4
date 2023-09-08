@@ -8,50 +8,54 @@
 #include <iostream>
 #include <vector>
 
-Uniforms uniform;
 Camera camera;
+std::vector<Model> models;
 
-void render(const std::vector<glm::vec3>& vertices) {
-    // 1. Vertex Shader
-    // vertex -> trasnformedVertices
-    std::vector<Vertex> transformedVertices;
+void render() {
+    for (const Model& model : models) {
+        Uniforms uniform = model.uniforms;
+        uniform.model = model.modelMatrix;
+        // 1. Vertex Shader
+        // vertex -> trasnformedVertices
+        std::vector<Vertex> transformedVertices;
 
-    for (int i = 0; i < vertices.size(); i+=2) {
-        glm::vec3 v = vertices[i];
-        glm::vec3 c = vertices[i + 1];
+        for (int i = 0; i < model.vertices.size(); i+=2) {
+            glm::vec3 v = model.vertices[i];
+            glm::vec3 c = model.vertices[i + 1];
 
-        Vertex vertex = {v, Color(c.x, c.y, c.z)};
+            Vertex vertex = {v, Color(c.x, c.y, c.z)};
 
-        Vertex transformedVertex = vertexShader(vertex, uniform);
-        transformedVertices.push_back(transformedVertex);
-    }
+            Vertex transformedVertex = vertexShader(vertex, uniform);
+            transformedVertices.push_back(transformedVertex);
+        }
 
-    // 2. Primitive Assembly
-    // transformedVertices -> triangles
-    std::vector<std::vector<Vertex>> triangles = primitiveAssembly(transformedVertices);
+        // 2. Primitive Assembly
+        // transformedVertices -> triangles
+        std::vector<std::vector<Vertex>> triangles = primitiveAssembly(transformedVertices);
 
-    // 3. Rasterize
-    // triangles -> Fragments
-    std::vector<Fragment> fragments;
-    for (const std::vector<Vertex>& triangleVertices : triangles) {
-        std::vector<Fragment> rasterizedTriangle = triangle(
-                triangleVertices[0],
-                triangleVertices[1],
-                triangleVertices[2]
-        );
+        // 3. Rasterize
+        // triangles -> Fragments
+        std::vector<Fragment> fragments;
+        for (const std::vector<Vertex>& triangleVertices : triangles) {
+            std::vector<Fragment> rasterizedTriangle = triangle(
+                    triangleVertices[0],
+                    triangleVertices[1],
+                    triangleVertices[2]
+            );
 
-        fragments.insert(
-                fragments.end(),
-                rasterizedTriangle.begin(),
-                rasterizedTriangle.end()
-        );
-    }
+            fragments.insert(
+                    fragments.end(),
+                    rasterizedTriangle.begin(),
+                    rasterizedTriangle.end()
+            );
+        }
 
-    // 4. Fragment Shader
-    // Fragments -> colors
+        // 4. Fragment Shader
+        // Fragments -> colors
 
-    for (Fragment fragment : fragments) {
-        point(sunFragmentShader(fragment));
+        for (Fragment fragment : fragments) {
+            point(sunFragmentShader(fragment));
+        }
     }
 }
 
@@ -76,19 +80,32 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::vector<glm::vec3> sphereVertices;
-    std::vector<Face> sphereFaces;
-    std::vector<glm::vec3> sphereNormals;
-    std::vector<glm::vec3> sphereTexCoords;
+    // Sol
+    std::vector<glm::vec3> sunVertices;
+    std::vector<Face> sunFaces;
+    std::vector<glm::vec3> sunNormals;
+    std::vector<glm::vec3> sunTexCoords;
+
+    // Uranus
+    std::vector<glm::vec3> uranusVertices;
+    std::vector<Face> uranusFaces;
+    std::vector<glm::vec3> uranusNormals;
+    std::vector<glm::vec3> uranusTexCoords;
 
     // Load the OBJ file
-    bool success = loadOBJ("../model/sphere.obj", sphereVertices, sphereFaces, sphereNormals, sphereTexCoords);
+    bool success = loadOBJ("../model/sphere.obj", sunVertices, sunFaces, sunNormals, sunTexCoords);
+    if (!success) {
+        std::cerr << "Error loading OBJ file!" << std::endl;
+        return 1;
+    }
+    success = loadOBJ("../model/sphere.obj", uranusVertices, uranusFaces, uranusNormals, uranusTexCoords);
     if (!success) {
         std::cerr << "Error loading OBJ file!" << std::endl;
         return 1;
     }
 
-    std::vector<glm::vec3> vertexBufferObject = setupVertexFromObject(sphereVertices, sphereFaces);
+    std::vector<glm::vec3> sunVBO = setupVertexFromObject(sunVertices, sunFaces);
+    std::vector<glm::vec3> uranusVBO = setupVertexFromObject(uranusVertices, uranusFaces);
 
     Uint32 frameStart, frameTime;
     std::string title = "FPS: ";
@@ -105,11 +122,13 @@ int main(int argc, char** argv) {
         }
 
         // Camera
-        camera.cameraPosition = glm::vec3(0.0f, 0.0f, 1.5f);
+        camera.cameraPosition = glm::vec3(0.0f, 0.0f, 2.5f);
         camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
         camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-        // Create uniform
+        // Create Sun uniform
+        Uniforms uniform;
+
         glm::vec3 translationVector(0.0f, 0.0f, 0.0f);
         glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
         glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
@@ -120,10 +139,35 @@ int main(int argc, char** argv) {
         uniform.projection = createProjectionMatrix();
         uniform.viewport = createViewportMatrix();
 
+        // Create Uranus uniform
+        Uniforms uranusUniform;
+
+        glm::vec3 translationVectorUranus(0.0f, 1.0f, 0.0f);
+        glm::vec3 rotationAxisUranus(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
+        glm::vec3 scaleFactorUranus(0.5f, 0.5f, 0.5f);
+
+        uranusUniform.model = createModelMatrix(translationVectorUranus, scaleFactorUranus, rotationAxisUranus, a);
+        uranusUniform.view = createViewMatrix(camera);
+        uranusUniform.projection = createProjectionMatrix();
+        uranusUniform.viewport = createViewportMatrix();
+
+        // Create model
+        Model sunModel;
+        sunModel.modelMatrix = uniform.model;
+        sunModel.vertices = sunVBO;
+        sunModel.uniforms = uniform;
+        models.push_back(sunModel);
+
+        Model uranusModel;
+        uranusModel.modelMatrix = uranusUniform.model;
+        uranusModel.vertices = uranusVBO;
+        uranusModel.uniforms = uranusUniform;
+        models.push_back(uranusModel);
+
         clear();
 
         // Render
-        render(vertexBufferObject);
+        render();
 
         // Present the frame buffer to the screen
         SDL_RenderPresent(renderer);

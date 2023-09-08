@@ -5,6 +5,14 @@
 #include <fstream>
 #include "gl.h"
 
+class Model {
+public:
+    glm::mat4 modelMatrix;
+    std::vector<glm::vec3> vertices;
+    Uniforms uniforms;
+};
+
+
 bool loadOBJ(
         const std::string& path,
         std::vector<glm::vec3>& out_vertices,
