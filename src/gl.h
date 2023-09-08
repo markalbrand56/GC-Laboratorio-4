@@ -69,6 +69,7 @@ void clear() {
 // Function to set a specific pixel in the framebuffer to the currentColor
 void point(Fragment f) {
     if (f.position.z < zbuffer[f.position.y][f.position.x]) {
+//        std::cout << f.color.r << " " << f.color.g << " " << f.color.b << std::endl;
         SDL_SetRenderDrawColor(renderer, f.color.r, f.color.g, f.color.b, f.color.a);
         SDL_RenderDrawPoint(renderer, f.position.x, f.position.y);
         zbuffer[f.position.y][f.position.x] = f.position.z;

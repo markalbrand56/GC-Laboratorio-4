@@ -65,6 +65,36 @@ Fragment fragmentShader(Fragment fragment) {
 
 Fragment sunFragmentShader(Fragment& fragment) {
     // Define the colors for the ocean, the ground, and the spots with direct values
+    // 244, 140, 6
+    glm::vec3 sunColor = glm::vec3(244.0f/255.0f, 140.0f/255.0f, 6.0f/255.0f);
+    // 191, 110, 6
+    glm::vec3 sunSpotColor = glm::vec3(191.0f/255.0f, 110.0f/255.0f, 6.0f/255.0f);
+
+    // Sample the Perlin noise map at the fragment's position
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.z);
+    uv = glm::clamp(uv, 0.0f, 1.0f);  // make sure the uv coordinates are in [0, 1] range
+
+    // Set up the noise generator
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    float ox = 1200.0f;
+    float oy = 3000.0f;
+    float z = 1000.0f;
+    // Generate the noise value
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
+
+    // Decide the spot color based on the noise value
+    glm::vec3 c = (noiseValue < 0.4f) ? sunColor : sunSpotColor;
+
+    // Convert glm::vec3 color to your Color class
+    fragment.color = Color(c.x, c.y, c.z);
+
+    return fragment;
+}
+
+Fragment earthFragmentShader(Fragment& fragment) {
+    // Define the colors for the ocean, the ground, and the spots with direct values
     glm::vec3 spotColorGreen = glm::vec3(0.133f, 0.545f, 0.133f);  // Forest green
     glm::vec3 spotColorBlue = glm::vec3(0.0f, 0.0f, 1.0f);  // Blue
 

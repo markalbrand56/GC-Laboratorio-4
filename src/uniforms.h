@@ -20,7 +20,7 @@ glm::mat4 createModelMatrix(glm::vec3 translationVector, glm::vec3 scaleVector, 
 
 glm::mat4 createProjectionMatrix() {
     float fovInDegrees = 45.0f;
-    float aspectRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
+    float aspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT; // cast to float
     float nearClip = 0.1f;
     float farClip = 100.0f;
 
