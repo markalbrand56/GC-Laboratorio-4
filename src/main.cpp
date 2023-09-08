@@ -63,6 +63,9 @@ void render() {
                 case Shader::Sun:
                     point(sunFragmentShader(fragment));
                     break;
+                case Shader::Moon:
+                    point(moonFragmentShader(fragment));
+                    break;
                 default:
                     point(fragmentShader(fragment));
                     break;
@@ -145,7 +148,7 @@ int main(int argc, char** argv) {
 
     glm::vec3 translationVectorUranus(0.0f, 1.0f, 0.0f);
     glm::vec3 rotationAxisUranus(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
-    glm::vec3 scaleFactorUranus(0.5f, 0.5f, 0.5f);
+    glm::vec3 scaleFactorUranus(0.27f, 0.27f, 0.27f);
 
     moonUniform.view = createViewMatrix(camera);
     moonUniform.projection = createProjectionMatrix();
@@ -160,7 +163,7 @@ int main(int argc, char** argv) {
     Model moonModel;
     moonModel.vertices = moonVBO;
     moonModel.uniforms = moonUniform;
-    moonModel.shader = Shader::Earth;
+    moonModel.shader = Shader::Moon;
 
     bool running = true;
     while (running) {

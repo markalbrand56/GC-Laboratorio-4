@@ -124,3 +124,46 @@ Fragment earthFragmentShader(Fragment& fragment) {
 
     return fragment;
 }
+
+Fragment moonFragmentShader(Fragment& fragment) {
+    // Define the colors for the ocean, the ground, and the spots with direct values
+    glm::vec3 spotColor = glm::vec3(0.8f, 0.8f, 0.8f);  // Gray
+
+    // Sample the Perlin noise map at the fragment's position
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.z);
+    uv = glm::clamp(uv, 0.0f, 1.0f);  // make sure the uv coordinates are in [0, 1] range
+
+    // Set up the noise generator
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    float ox = 1200.0f;
+    float oy = 3000.0f;
+    float z = 1000.0f;
+    // Generate the noise value
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
+
+    // Ajusta la escala y el sesgo del valor de ruido
+    float scale = 0.2f; // Ajusta este valor según tus preferencias
+    float bias = 0.8f;  // Ajusta este valor según tus preferencias
+
+    float adjustedNoise = (noiseValue * scale) + bias;
+
+
+    // Asegúrate de que el valor esté en el rango [0.8, 1.0]
+    adjustedNoise = glm::clamp(adjustedNoise, 0.6f, 0.8f);
+
+    // Usa el valor ajustado para definir el color
+    glm::vec3 c = glm::vec3(adjustedNoise);
+
+    // Convierte glm::vec3 color a tu clase Color
+    fragment.color = Color(c.r, c.g, c.b);
+
+    // Interpolate between the ocean color and the ground color based on the water/ground transition
+    // Then, interpolate between this color and the spot color
+
+    // Convert glm::vec3 color to your Color class
+    fragment.color = Color(c.r, c.g, c.b);
+
+    return fragment;
+}
