@@ -167,3 +167,46 @@ Fragment moonFragmentShader(Fragment& fragment) {
 
     return fragment;
 }
+
+Fragment jupiterFragmentShader(Fragment& fragment){
+    Color color;
+
+    glm::vec3 mainColor = glm::vec3(204.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f);  // 204, 255, 255: Light blue
+    glm::vec3 secondColor = glm::vec3(0.0f/255.0f, 153.0f/255.0f, 153.0f/255.0f);  // 0, 153, 153: Dark blue
+    glm::vec3 thirdColor = glm::vec3(204.0f/255.0f, 255.0f/255.0f, 229.0f/255.0f);  // 204, 255, 229: Light green
+
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x * 2.0 - 1.0 , fragment.originalPos.y * 2.0 - 1.0);
+
+    // Frecuencia y amplitud de las ondas en el planeta
+    float frequency = 20.0; // Ajusta la frecuencia de las líneas
+    float amplitude = 0.1; // Ajusta la amplitud de las líneas
+
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+
+    float offsetX = 800.0f;
+    float offsetY = 200.0f;
+    float scale = 100.0f;
+
+    // Genera el valor de ruido
+    float noiseValue = noiseGenerator.GetNoise((uv.x + offsetX) * scale, (uv.y + offsetY) * scale);
+    noiseValue = (noiseValue + 1.0f) * 0.5f;
+
+    //aplicar ruido como hacer piedras
+    noiseValue = glm::smoothstep(0.0f, 1.0f, noiseValue);
+
+    // Interpola entre el color base y el color secundario basado en el valor de ruido
+    secondColor = glm::mix(mainColor, secondColor, noiseValue);
+
+    // Calcula el valor sinusoide para crear líneas
+    float sinValue = glm::sin(uv.y * frequency) * amplitude;
+
+    // Combina el color base con las líneas sinusoide
+    secondColor = secondColor + glm::vec3 (sinValue);
+
+    color = Color(secondColor.x, secondColor.y, secondColor.z);
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}

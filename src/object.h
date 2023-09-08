@@ -9,7 +9,7 @@ enum class Shader {
     Earth,
     Sun,
     Moon,
-    Pluto,
+    Jupiter,
 };
 
 class Model {

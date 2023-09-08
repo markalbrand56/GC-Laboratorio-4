@@ -25,7 +25,7 @@ void render() {
             glm::vec3 v = model.vertices[i];
             glm::vec3 c = model.vertices[i + 1];
 
-            Vertex vertex = {v, Color(c.x, c.y, c.z)};
+            Vertex vertex = {v, Color(255, 255, 255)};
 
             Vertex transformedVertex = vertexShader(vertex, uniform);
             transformedVertices.push_back(transformedVertex);
@@ -83,7 +83,7 @@ std::vector<glm::vec3> setupVertexFromObject(const std::vector<glm::vec3>& verti
     for (const Face& face : faces) {
         for (const std::array<int, 3>& vertexIndices : face.vertexIndices) {
             glm::vec3 vertex = vertices[vertexIndices[0] - 1];
-            glm::vec3 color = glm::vec3(0.8f, 0.8f, 0.8f);
+            glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
             vertexBufferObject.push_back(vertex);
             vertexBufferObject.push_back(color);
