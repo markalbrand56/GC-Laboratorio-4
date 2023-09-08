@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
     Model planetModel;
     planetModel.vertices = planetVBO;
     planetModel.uniforms = planetUniform;
-    planetModel.shader = Shader::Jupiter;
+    planetModel.shader = Shader::Earth;
 
     Model moonModel;
     moonModel.vertices = moonVBO;
@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
         }
 
         a += speed;
-        b += speed * 1.5;
+        b += speed * 1.5f;
 
         // Sun
         planetUniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);

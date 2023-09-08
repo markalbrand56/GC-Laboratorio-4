@@ -94,32 +94,42 @@ Fragment sunFragmentShader(Fragment& fragment) {
 }
 
 Fragment earthFragmentShader(Fragment& fragment) {
-    // Define the colors for the ocean, the ground, and the spots with direct values
-    glm::vec3 spotColorGreen = glm::vec3(0.133f, 0.545f, 0.133f);  // Forest green
-    glm::vec3 spotColorBlue = glm::vec3(0.0f, 0.0f, 1.0f);  // Blue
+    Color color;
 
-    // Sample the Perlin noise map at the fragment's position
-    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.z);
-    uv = glm::clamp(uv, 0.0f, 1.0f);  // make sure the uv coordinates are in [0, 1] range
+    glm::vec3 groundColor = glm::vec3(0.44f, 0.51f, 0.33f);
+    glm::vec3 oceanColor = glm::vec3(0.12f, 0.38f, 0.57f);
+    glm::vec3 cloudColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    // Set up the noise generator
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.y);
+    /* glm::vec2 uv = glm::vec2(fragment.texCoords.x, fragment.texCoords.y) */;
+
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
     float ox = 1200.0f;
     float oy = 3000.0f;
-    float z = 1000.0f;
-    // Generate the noise value
-    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
+    float zoom = 200.0f;
 
-    // Decide the spot color based on the noise value
-    glm::vec3 c = (noiseValue < 0.5f) ? spotColorBlue : spotColorGreen;
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * zoom, (uv.y + oy) * zoom);
 
-    // Interpolate between the ocean color and the ground color based on the water/ground transition
-    // Then, interpolate between this color and the spot color
+    glm::vec3 tmpColor = (noiseValue < 0.5f) ? oceanColor : groundColor;
 
-    // Convert glm::vec3 color to your Color class
-    fragment.color = Color(c.r, c.g, c.b);
+    float oxc = 5500.0f;
+    float oyc = 6900.0f;
+    float zoomc = 300.0f;
+
+    float noiseValueC = noiseGenerator.GetNoise((uv.x + oxc) * zoomc, (uv.y + oyc) * zoomc);
+
+    if (noiseValueC > 0.5f) {
+        tmpColor = cloudColor;
+    }
+
+
+    color = Color(tmpColor.x, tmpColor.y, tmpColor.z);
+
+
+
+    fragment.color = color * fragment.intensity;
 
     return fragment;
 }
