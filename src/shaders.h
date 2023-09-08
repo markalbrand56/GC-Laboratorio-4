@@ -85,7 +85,8 @@ Fragment sunFragmentShader(Fragment& fragment) {
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
 
     // Decide the spot color based on the noise value
-    glm::vec3 c = (noiseValue < 0.4f) ? sunColor : sunSpotColor;
+    float normalizedNoise = (noiseValue + 1.0f) * 0.5f;
+    glm::vec3 c = glm::mix(sunColor, sunSpotColor, normalizedNoise);
 
     // Convert glm::vec3 color to your Color class
     fragment.color = Color(c.x, c.y, c.z);

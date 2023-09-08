@@ -12,9 +12,11 @@ Camera camera;
 std::vector<Model> models;
 
 void render() {
-    for (const Model& model : models) {
+    for (int i = 0; i < models.size(); i++) {
+        Model model = models[i];
         Uniforms uniform = model.uniforms;
         uniform.model = model.modelMatrix;
+
         // 1. Vertex Shader
         // vertex -> trasnformedVertices
         std::vector<Vertex> transformedVertices;
@@ -54,7 +56,14 @@ void render() {
         // Fragments -> colors
 
         for (Fragment fragment : fragments) {
-            point(sunFragmentShader(fragment));
+            switch (i) {
+                case 0:
+                    point(sunFragmentShader(fragment));
+                    break;
+                case 1:
+                    point(earthFragmentShader(fragment));
+                    break;
+            }
         }
     }
 }
@@ -110,6 +119,43 @@ int main(int argc, char** argv) {
     Uint32 frameStart, frameTime;
     std::string title = "FPS: ";
     float a = 45.0f;
+    float b = 0.0f;
+
+    // Camera
+    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 2.5f);
+    camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    // Create Sun uniform
+    Uniforms uniform;
+
+    glm::vec3 translationVector(0.0f, 0.0f, 0.0f);
+    glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
+    glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
+
+    uniform.view = createViewMatrix(camera);
+    uniform.projection = createProjectionMatrix();
+    uniform.viewport = createViewportMatrix();
+
+    // Create Uranus uniform
+    Uniforms uranusUniform;
+
+    glm::vec3 translationVectorUranus(0.0f, 1.0f, 0.0f);
+    glm::vec3 rotationAxisUranus(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
+    glm::vec3 scaleFactorUranus(0.5f, 0.5f, 0.5f);
+
+    uranusUniform.view = createViewMatrix(camera);
+    uranusUniform.projection = createProjectionMatrix();
+    uranusUniform.viewport = createViewportMatrix();
+
+    // Create model
+    Model sunModel;
+    sunModel.vertices = sunVBO;
+    sunModel.uniforms = uniform;
+
+    Model uranusModel;
+    uranusModel.vertices = uranusVBO;
+    uranusModel.uniforms = uranusUniform;
 
     bool running = true;
     while (running) {
@@ -121,47 +167,18 @@ int main(int argc, char** argv) {
             }
         }
 
-        // Camera
-        camera.cameraPosition = glm::vec3(0.0f, 0.0f, 2.5f);
-        camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-        camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+        a += 15.0f;
+        b += 30.0f;
 
-        // Create Sun uniform
-        Uniforms uniform;
-
-        glm::vec3 translationVector(0.0f, 0.0f, 0.0f);
-        glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
-        glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
-
-        a += 2.0f;
+        // Sun
         uniform.model = createModelMatrix(translationVector, scaleFactor, rotationAxis, a);
-        uniform.view = createViewMatrix(camera);
-        uniform.projection = createProjectionMatrix();
-        uniform.viewport = createViewportMatrix();
-
-        // Create Uranus uniform
-        Uniforms uranusUniform;
-
-        glm::vec3 translationVectorUranus(0.0f, 1.0f, 0.0f);
-        glm::vec3 rotationAxisUranus(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
-        glm::vec3 scaleFactorUranus(0.5f, 0.5f, 0.5f);
-
-        uranusUniform.model = createModelMatrix(translationVectorUranus, scaleFactorUranus, rotationAxisUranus, a);
-        uranusUniform.view = createViewMatrix(camera);
-        uranusUniform.projection = createProjectionMatrix();
-        uranusUniform.viewport = createViewportMatrix();
-
-        // Create model
-        Model sunModel;
         sunModel.modelMatrix = uniform.model;
-        sunModel.vertices = sunVBO;
-        sunModel.uniforms = uniform;
-        models.push_back(sunModel);
 
-        Model uranusModel;
+        // Uranus
+        uranusUniform.model = createModelMatrix(translationVectorUranus, scaleFactorUranus, rotationAxisUranus, b);
         uranusModel.modelMatrix = uranusUniform.model;
-        uranusModel.vertices = uranusVBO;
-        uranusModel.uniforms = uranusUniform;
+
+        models.push_back(sunModel);
         models.push_back(uranusModel);
 
         clear();
@@ -169,6 +186,7 @@ int main(int argc, char** argv) {
         // Render
         render();
 
+        models.clear();
         // Present the frame buffer to the screen
         SDL_RenderPresent(renderer);
 
