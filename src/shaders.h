@@ -180,14 +180,16 @@ Fragment moonFragmentShader(Fragment& fragment) {
 Fragment jupiterFragmentShader(Fragment& fragment){
     Color color;
 
-    glm::vec3 mainColor = glm::vec3(204.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f);  // 204, 255, 255: Light blue
-    glm::vec3 secondColor = glm::vec3(0.0f/255.0f, 153.0f/255.0f, 153.0f/255.0f);  // 0, 153, 153: Dark blue
-    glm::vec3 thirdColor = glm::vec3(204.0f/255.0f, 255.0f/255.0f, 229.0f/255.0f);  // 204, 255, 229: Light green
+    // 214 181 144
+    glm::vec3 mainColor = glm::vec3(214.0f/255.0f, 181.0f/255.0f, 144.0f/255.0f);  // 214, 181, 144: Light brown
+    // white
+    glm::vec3 secondColor = glm::vec3(1.0f, 1.0f, 1.0f);  // 255, 255, 255: White
+    glm::vec3 thirdColor = glm::vec3(237.0f/255.0f, 166.0f/255.0f, 85.0f/255.0f);  // 204, 255, 229: Light green
 
     glm::vec2 uv = glm::vec2(fragment.originalPos.x * 2.0 - 1.0 , fragment.originalPos.y * 2.0 - 1.0);
 
     // Frecuencia y amplitud de las ondas en el planeta
-    float frequency = 9.0; // Ajusta la frecuencia de las líneas
+    float frequency = 11.0; // Ajusta la frecuencia de las líneas
     float amplitude = 0.1; // Ajusta la amplitud de las líneas
 
     FastNoiseLite noiseGenerator;
