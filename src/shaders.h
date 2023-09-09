@@ -187,7 +187,7 @@ Fragment jupiterFragmentShader(Fragment& fragment){
     glm::vec2 uv = glm::vec2(fragment.originalPos.x * 2.0 - 1.0 , fragment.originalPos.y * 2.0 - 1.0);
 
     // Frecuencia y amplitud de las ondas en el planeta
-    float frequency = 20.0; // Ajusta la frecuencia de las líneas
+    float frequency = 9.0; // Ajusta la frecuencia de las líneas
     float amplitude = 0.1; // Ajusta la amplitud de las líneas
 
     FastNoiseLite noiseGenerator;
@@ -211,7 +211,7 @@ Fragment jupiterFragmentShader(Fragment& fragment){
     float sinValue = glm::sin(uv.y * frequency) * amplitude;
 
     // Combina el color base con las líneas sinusoide
-    secondColor = secondColor + glm::vec3 (sinValue);
+    secondColor = glm::mix(secondColor, thirdColor, sinValue);
 
     color = Color(secondColor.x, secondColor.y, secondColor.z);
 
@@ -229,9 +229,9 @@ Fragment noiseFragmentShader(Fragment& fragment) {
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
-    float ox = 1200.0f;
+    float ox = 5000.0f;
     float oy = 3000.0f;
-    float z = 1000.0f;
+    float z = 200.0f;
 
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
 
