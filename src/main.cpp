@@ -10,6 +10,7 @@
 
 Camera camera;
 std::vector<Model> models;
+std::string planet = "";
 
 using namespace std;
 void render() {
@@ -114,12 +115,16 @@ Shader getNextPlanetTexture(Shader currentTexture) {
     // Implementa la lógica para cambiar a la siguiente textura
     switch (currentTexture) {
         case Shader::Earth:
+            planet = "Sun";
             return Shader::Sun;
         case Shader::Sun:
+            planet = "Jupiter";
             return Shader::Jupiter;
         case Shader::Jupiter:
+            planet = "Earth";
             return Shader::Earth;
         default:
+            planet = "Earth";
             return Shader::Earth;
     }
 }
@@ -266,7 +271,7 @@ int main(int argc, char** argv) {
         // Calculate frames per second and update window title
         if (frameTime > 0) {
             std::ostringstream titleStream;
-            titleStream << "FPS: " << 1000.0 / frameTime;  // Milliseconds to seconds
+            titleStream << planet + " FPS: " << 1000.0 / frameTime;  // Milliseconds to seconds
             SDL_SetWindowTitle(window, titleStream.str().c_str());
         }
     }
