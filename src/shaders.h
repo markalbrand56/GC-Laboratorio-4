@@ -219,3 +219,25 @@ Fragment jupiterFragmentShader(Fragment& fragment){
 
     return fragment;
 }
+
+// MAKE A SHADER TO DISPLAY PLAIN NOISE
+Fragment noiseFragmentShader(Fragment& fragment) {
+    Color color;
+
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.y);
+
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    float ox = 1200.0f;
+    float oy = 3000.0f;
+    float z = 1000.0f;
+
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
+
+    color = Color(noiseValue, noiseValue, noiseValue);
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}

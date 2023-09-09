@@ -73,6 +73,9 @@ void render() {
                 case Shader::Jupiter:
                     point(jupiterFragmentShader(fragment));
                     break;
+                case Shader::Noise:
+                    point(noiseFragmentShader(fragment));
+                    break;
                 default:
                     point(fragmentShader(fragment));
                     break;
@@ -105,6 +108,20 @@ std::vector<glm::vec3> setupVertexFromObject(const std::vector<Face>& faces, con
     }
 
     return vertexBufferObject;
+}
+
+Shader getNextPlanetTexture(Shader currentTexture) {
+    // Implementa la lógica para cambiar a la siguiente textura
+    switch (currentTexture) {
+        case Shader::Earth:
+            return Shader::Sun;
+        case Shader::Sun:
+            return Shader::Jupiter;
+        case Shader::Jupiter:
+            return Shader::Earth;
+        default:
+            return Shader::Earth;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -174,7 +191,7 @@ int main(int argc, char** argv) {
     Model planetModel;
     planetModel.vertices = planetVBO;
     planetModel.uniforms = planetUniform;
-    planetModel.shader = Shader::Earth;
+    planetModel.shader = Shader::Noise;
 
     Model moonModel;
     moonModel.vertices = moonVBO;
@@ -203,6 +220,9 @@ int main(int argc, char** argv) {
                         break;
                     case SDLK_RIGHT:
                         speed += 1.0f;
+                        break;
+                    case SDLK_SPACE:
+                        planetModel.shader = getNextPlanetTexture(planetModel.shader);
                         break;
                 }
             }
