@@ -184,18 +184,19 @@ Fragment jupiterFragmentShader(Fragment& fragment){
     glm::vec3 mainColor = glm::vec3(214.0f/255.0f, 181.0f/255.0f, 144.0f/255.0f);  // 214, 181, 144: Light brown
     // white
     glm::vec3 secondColor = glm::vec3(1.0f, 1.0f, 1.0f);  // 255, 255, 255: White
-    glm::vec3 thirdColor = glm::vec3(237.0f/255.0f, 166.0f/255.0f, 85.0f/255.0f);  // 204, 255, 229: Light green
+    // 214 131 36
+    glm::vec3 thirdColor = glm::vec3(214.0f/255.0f, 131.0f/255.0f, 36.0f/255.0f);  // 214, 131, 36: Dark brown
 
     glm::vec2 uv = glm::vec2(fragment.originalPos.x * 2.0 - 1.0 , fragment.originalPos.y * 2.0 - 1.0);
 
     // Frecuencia y amplitud de las ondas en el planeta
-    float frequency = 11.0; // Ajusta la frecuencia de las líneas
+    float frequency = 13.0; // Ajusta la frecuencia de las líneas
     float amplitude = 0.1; // Ajusta la amplitud de las líneas
 
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
 
-    float offsetX = 800.0f;
+    float offsetX = 1000.0f;
     float offsetY = 200.0f;
     float scale = 100.0f;
 
