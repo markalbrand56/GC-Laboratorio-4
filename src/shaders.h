@@ -96,7 +96,8 @@ Fragment sunFragmentShader(Fragment& fragment) {
 Fragment earthFragmentShader(Fragment& fragment) {
     Color color;
 
-    glm::vec3 groundColor = glm::vec3(0.44f, 0.51f, 0.33f);
+    glm::vec3 forestColor = glm::vec3(0.44f, 0.51f, 0.33f);
+    glm::vec3 dirtColor = glm::vec3(179/255.0f, 147/255.0f, 120/255.0f);
     glm::vec3 oceanColor = glm::vec3(0.12f, 0.38f, 0.57f);
     glm::vec3 cloudColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -112,7 +113,8 @@ Fragment earthFragmentShader(Fragment& fragment) {
 
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * zoom, (uv.y + oy) * zoom);
 
-    glm::vec3 tmpColor = (noiseValue < 0.5f) ? oceanColor : groundColor;
+    glm::vec3 tmpColor = (noiseValue < 0.05f) ? oceanColor : forestColor;
+    tmpColor = (noiseValue > 0.76f) ? dirtColor : tmpColor;
 
     float oxc = 5500.0f;
     float oyc = 6900.0f;
@@ -124,10 +126,7 @@ Fragment earthFragmentShader(Fragment& fragment) {
         tmpColor = cloudColor;
     }
 
-
     color = Color(tmpColor.x, tmpColor.y, tmpColor.z);
-
-
 
     fragment.color = color * fragment.intensity;
 
