@@ -11,6 +11,7 @@
 Camera camera;
 std::vector<Model> models;
 std::string planet = "";
+bool hasMoon = false;
 
 using namespace std;
 void render() {
@@ -116,15 +117,19 @@ Shader getNextPlanetTexture(Shader currentTexture) {
     switch (currentTexture) {
         case Shader::Earth:
             planet = "Sun";
+            hasMoon = false;
             return Shader::Sun;
         case Shader::Sun:
             planet = "Jupiter";
+            hasMoon = false;
             return Shader::Jupiter;
         case Shader::Jupiter:
             planet = "Earth";
+            hasMoon = true;
             return Shader::Earth;
         default:
             planet = "Earth";
+            hasMoon = true;
             return Shader::Earth;
     }
 }
@@ -252,7 +257,10 @@ int main(int argc, char** argv) {
         moonModel.modelMatrix = moonUniform.model;
 
         models.push_back(planetModel);
-        models.push_back(moonModel);
+
+        if (hasMoon){
+            models.push_back(moonModel);
+        }
 
         clear();
 
