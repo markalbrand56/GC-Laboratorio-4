@@ -178,12 +178,14 @@ Fragment jupiterFragmentShader(Fragment& fragment){
     glm::vec3 secondColor = glm::vec3(1.0f, 1.0f, 1.0f);  // 255, 255, 255: White
     // 214 131 36
     glm::vec3 thirdColor = glm::vec3(214.0f/255.0f, 131.0f/255.0f, 36.0f/255.0f);  // 214, 131, 36: Dark brown
+    // 204 131 92
+    glm::vec3 fourthColor = glm::vec3(204.0f/255.0f, 131.0f/255.0f, 92.0f/255.0f);  // 204, 131, 92: Brown
 
     glm::vec2 uv = glm::vec2(fragment.originalPos.x * 2.0 - 1.0 , fragment.originalPos.y * 2.0 - 1.0);
 
     // Frecuencia y amplitud de las ondas en el planeta
-    float frequency = 13.0; // Ajusta la frecuencia de las líneas
-    float amplitude = 0.1; // Ajusta la amplitud de las líneas
+    float frequency = 10.0; // Ajusta la frecuencia de las líneas
+    float amplitude = 0.2; // Ajusta la amplitud de las líneas
 
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
@@ -195,20 +197,31 @@ Fragment jupiterFragmentShader(Fragment& fragment){
     // Genera el valor de ruido
     float noiseValue = noiseGenerator.GetNoise((uv.x + offsetX) * scale, (uv.y + offsetY) * scale);
     noiseValue = (noiseValue + 1.0f) * 0.5f;
+    noiseValue = glm::smoothstep(0.2f, 0.8f, noiseValue);
 
-    //aplicar ruido como hacer piedras
-    noiseValue = glm::smoothstep(0.0f, 1.0f, noiseValue);
+    glm::vec3 tmpColor;
 
     // Interpola entre el color base y el color secundario basado en el valor de ruido
-    secondColor = glm::mix(mainColor, secondColor, noiseValue);
+    tmpColor = glm::mix(mainColor, secondColor, noiseValue);
 
     // Calcula el valor sinusoide para crear líneas
     float sinValue = glm::sin(uv.y * frequency) * amplitude;
 
     // Combina el color base con las líneas sinusoide
-    secondColor = glm::mix(secondColor, thirdColor, sinValue);
+    tmpColor = glm::mix(tmpColor, thirdColor, sinValue);
 
-    color = Color(secondColor.x, secondColor.y, secondColor.z);
+    // Tormenta de Júpiter
+    float oxc = 5500.0f;
+    float oyc = 7300.0f;
+    float zoomc = 80.0f;
+
+    float noiseValueC = noiseGenerator.GetNoise((uv.x + oxc) * zoomc, (uv.y + oyc) * zoomc);
+
+    if (abs(noiseValueC) > 0.985f) {
+        tmpColor = glm::mix(tmpColor, fourthColor, glm::smoothstep(0.985f, 1.0f, abs(noiseValueC)));
+    }
+
+    color = Color(tmpColor.x, tmpColor.y, tmpColor.z);
 
     fragment.color = color * fragment.intensity;
 
