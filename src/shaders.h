@@ -93,7 +93,7 @@ Fragment sunFragmentShader(Fragment& fragment) {
     return fragment;
 }
 
-float smoothstep(float edge0, float edge1, float x) {
+float smoothStep(float edge0, float edge1, float x) {
     // Scale, bias, and saturate x to 0..1 range
     x = glm::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     // Evaluate polynomial
@@ -124,7 +124,7 @@ Fragment earthFragmentShader(Fragment& fragment) {
     if (noiseValue < 0.05f) {
         tmpColor = oceanColor;
     } else {
-        tmpColor = glm::mix(forestColor, dirtColor, smoothstep(0.15f, 0.96f, noiseValue));
+        tmpColor = glm::mix(forestColor, dirtColor, smoothStep(0.15f, 0.96f, noiseValue));
     }
 
     float oxc = 5500.0f;
