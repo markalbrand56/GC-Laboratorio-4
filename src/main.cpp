@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
 
     cout << "Starting loop" << endl;
 
-    float speed = 10.0f;
+    float speed = 5.0f;
     bool running = true;
     float moonOrbitAngle = 0.0f;
     float distanceToPlanet = 1.0f;
@@ -243,8 +243,8 @@ int main(int argc, char** argv) {
             }
         }
 
-        a += speed;
-        b += speed * 1.5f;
+        a += (speed/planetSize);
+        b += (speed/planetSize) * 1.5f;
 
         // Sun
         planetUniform.model = createModelMatrix(translationVector, scaleFactor * planetSize, rotationAxis, a);

@@ -11,6 +11,9 @@
 #include <cmath>
 #include <random>
 
+const glm::vec3 white = glm::vec3(1.0f, 1.0f, 1.0f);  // 1, 1, 1: White
+const glm::vec3 black = glm::vec3(0.0f, 0.0f, 0.0f);  // 0, 0, 0: Black
+
 Vertex vertexShader(const Vertex& vertex, const Uniforms& uniforms) {
     // Apply transformations to the input vertex using the matrices from the uniforms
     glm::vec4 clipSpaceVertex = uniforms.projection * uniforms.view * uniforms.model * glm::vec4(vertex.position, 1.0f);
@@ -63,41 +66,34 @@ Fragment fragmentShader(Fragment fragment) {
 }
 
 Fragment sunFragmentShader(Fragment& fragment) {
-    // Define the colors for the ocean, the ground, and the spots with direct values
-    // 244, 140, 6
-    glm::vec3 sunColor = glm::vec3(244.0f/255.0f, 140.0f/255.0f, 6.0f/255.0f);
-    // 191, 110, 6
-    glm::vec3 sunSpotColor = glm::vec3(191.0f/255.0f, 110.0f/255.0f, 6.0f/255.0f);
+    Color color;
 
-    // Sample the Perlin noise map at the fragment's position
-    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.z);
-    uv = glm::clamp(uv, 0.0f, 1.0f);  // make sure the uv coordinates are in [0, 1] range
+    // 235 127 33
+    glm::vec3 mainColor = glm::vec3(235.0f/255.0f, 127.0f/255.0f, 33.0f/255.0f);  // 235, 127, 33: Orange
+    // 194 77 14
+    glm::vec3 secondColor = glm::vec3(194.0f/255.0f, 77.0f/255.0f, 14.0f/255.0f);  // 194, 77, 14: Dark orange
 
-    // Set up the noise generator
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.y);
+
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
-    float ox = 1200.0f;
+    float ox = 3200.0f;
     float oy = 3000.0f;
-    float z = 1000.0f;
-    // Generate the noise value
+    float z = 1800.0f;
+
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
 
-    // Decide the spot color based on the noise value
-    float normalizedNoise = (noiseValue + 1.0f) * 0.5f;
-    glm::vec3 c = glm::mix(sunColor, sunSpotColor, normalizedNoise);
+    glm::vec3 tempColor;
 
-    // Convert glm::vec3 color to your Color class
-    fragment.color = Color(c.x, c.y, c.z);
+    tempColor = glm::mix(secondColor, mainColor,glm::smoothstep(0.16f, 0.6f, abs(noiseValue)));
+//    tempColor = (abs(noiseValue) < 0.6f) ? mainColor : secondColor;
+
+    color = Color(tempColor.x, tempColor.y, tempColor.z);
+
+    fragment.color = color * fragment.intensity;
 
     return fragment;
-}
-
-float smoothStep(float edge0, float edge1, float x) {
-    // Scale, bias, and saturate x to 0..1 range
-    x = glm::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
-    // Evaluate polynomial
-    return x * x * (3 - 2 * x);
 }
 
 Fragment earthFragmentShader(Fragment& fragment) {
@@ -124,7 +120,7 @@ Fragment earthFragmentShader(Fragment& fragment) {
     if (noiseValue < 0.05f) {
         tmpColor = oceanColor;
     } else {
-        tmpColor = glm::mix(forestColor, dirtColor, smoothStep(0.15f, 0.96f, noiseValue));
+        tmpColor = glm::mix(forestColor, dirtColor, glm::smoothstep(0.15f, 0.96f, noiseValue));
     }
 
     float oxc = 5500.0f;
