@@ -93,6 +93,13 @@ Fragment sunFragmentShader(Fragment& fragment) {
     return fragment;
 }
 
+float smoothstep(float edge0, float edge1, float x) {
+    // Scale, bias, and saturate x to 0..1 range
+    x = glm::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
+    // Evaluate polynomial
+    return x * x * (3 - 2 * x);
+}
+
 Fragment earthFragmentShader(Fragment& fragment) {
     Color color;
 
@@ -102,7 +109,6 @@ Fragment earthFragmentShader(Fragment& fragment) {
     glm::vec3 cloudColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
     glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.y);
-    /* glm::vec2 uv = glm::vec2(fragment.texCoords.x, fragment.texCoords.y) */;
 
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -113,8 +119,13 @@ Fragment earthFragmentShader(Fragment& fragment) {
 
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * zoom, (uv.y + oy) * zoom);
 
-    glm::vec3 tmpColor = (noiseValue < 0.05f) ? oceanColor : forestColor;
-    tmpColor = (noiseValue > 0.76f) ? dirtColor : tmpColor;
+    glm::vec3 tmpColor;
+
+    if (noiseValue < 0.05f) {
+        tmpColor = oceanColor;
+    } else {
+        tmpColor = glm::mix(forestColor, dirtColor, smoothstep(0.15f, 0.96f, noiseValue));
+    }
 
     float oxc = 5500.0f;
     float oyc = 6900.0f;
@@ -132,6 +143,7 @@ Fragment earthFragmentShader(Fragment& fragment) {
 
     return fragment;
 }
+
 
 Fragment moonFragmentShader(Fragment& fragment) {
     // Define the colors for the ocean, the ground, and the spots with direct values
