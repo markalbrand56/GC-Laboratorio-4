@@ -228,6 +228,56 @@ Fragment jupiterFragmentShader(Fragment& fragment){
     return fragment;
 }
 
+Fragment uranusFragmentShader (Fragment& fragment){
+    Color color;
+
+    // 173, 245, 247
+    glm::vec3 mainColor = glm::vec3(173.0f/255.0f, 245.0f/255.0f, 247.0f/255.0f);  // 173, 245, 247: Light blue
+    // 92, 171, 250
+    glm::vec3 secondColor = glm::vec3(92.0f/255.0f, 171.0f/255.0f, 250.0f/255.0f);  // 92, 171, 250: Dark blue
+    // 14, 98, 181
+    glm::vec3 thirdColor = glm::vec3(14.0f/255.0f, 98.0f/255.0f, 181.0f/255.0f);  // 14, 98, 181: Darker blue
+
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x * 2.0 - 1.0 , fragment.originalPos.y * 2.0 - 1.0);
+
+    // Frecuencia y amplitud de las ondas en el planeta
+    float frequency = 9.0; // Ajusta la frecuencia de las líneas
+    float amplitude = 0.32; // Ajusta la amplitud de las líneas
+
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+
+    float offsetX = 1000.0f;
+    float offsetY = 200.0f;
+    float scale = 100.0f;
+
+    // Genera el valor de ruido
+    float noiseValue = noiseGenerator.GetNoise((uv.x + offsetX) * scale, (uv.y + offsetY) * scale);
+    noiseValue = (noiseValue + 1.0f) * 0.5f;
+    noiseValue = glm::smoothstep(0.2f, 0.8f, noiseValue);
+
+    glm::vec3 tmpColor;
+
+    // Interpola entre el color base y el color secundario basado en el valor de ruido
+    if (abs(noiseValue) < 0.8f) {
+        tmpColor = glm::mix(mainColor, secondColor, noiseValue);
+    } else {
+        tmpColor = glm::mix(secondColor, thirdColor, noiseValue);
+    }
+
+    // Calcula el valor sinusoide para crear líneas
+    float sinValue = glm::sin(uv.y * frequency) * amplitude;
+
+    // Combina el color base con las líneas sinusoide
+    tmpColor = glm::mix(tmpColor, white, sinValue);
+
+    color = Color(tmpColor.x, tmpColor.y, tmpColor.z);
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}
+
 // MAKE A SHADER TO DISPLAY PLAIN NOISE
 Fragment noiseFragmentShader(Fragment& fragment) {
     Color color;

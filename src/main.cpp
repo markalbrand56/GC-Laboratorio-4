@@ -76,6 +76,9 @@ void render() {
                 case Shader::Jupiter:
                     point(jupiterFragmentShader(fragment));
                     break;
+                case Shader::Uranus:
+                    point(uranusFragmentShader(fragment));
+                    break;
                 case Shader::Noise:
                     point(noiseFragmentShader(fragment));
                     break;
@@ -119,14 +122,19 @@ Shader getNextPlanetTexture(Shader currentTexture) {
         case Shader::Earth:
             planet = "Sun";
             hasMoon = false;
-            planetSize = 1.75f;
+            planetSize = 1.6f;
             return Shader::Sun;
         case Shader::Sun:
             planet = "Jupiter";
             hasMoon = false;
-            planetSize = 1.5f;
+            planetSize = 1.3f;
             return Shader::Jupiter;
         case Shader::Jupiter:
+            planet = "Uranus";
+            hasMoon = false;
+            planetSize = 1.15f;
+            return Shader::Uranus;
+        case Shader::Uranus:
             planet = "Earth";
             hasMoon = true;
             planetSize = 1.0f;
