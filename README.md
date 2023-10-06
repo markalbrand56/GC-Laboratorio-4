@@ -24,6 +24,9 @@ Aplican las mismas reglas de no usar texturas ni materiales
   - Capa 4: *Atmósfera*
 
 #### Gigante Gaseoso: *Jupiter*
+- Capas del shader: *4*
+  - Capa 1-3: *Textura de líneas de Júpiter*
+  - Capa 4: *Tormentas de Júpiter*
 
 #### Planetas adicionales:
 - *Urano*
