@@ -31,3 +31,4 @@ Aplican las mismas reglas de no usar texturas ni materiales
 #### Planetas adicionales:
 - *Urano*
 - *Marte*
+- *Kepler 186f*
