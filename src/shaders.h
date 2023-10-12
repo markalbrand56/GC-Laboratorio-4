@@ -278,6 +278,42 @@ Fragment uranusFragmentShader (Fragment& fragment){
     return fragment;
 }
 
+Fragment plutoFragmentShader(Fragment& fragment) {
+    Color color;
+
+    // 161 89 67
+    glm::vec3 forestColor = glm::vec3(161.0f/255.0f, 89.0f/255.0f, 67.0f/255.0f);  // 161, 89, 67: Brown
+    // 128 72 55
+    glm::vec3 dirtColor = glm::vec3(128.0f/255.0f, 72.0f/255.0f, 55.0f/255.0f);  // 128, 72, 55: Darker brown
+    // 105 50 33
+    glm::vec3 oceanColor = glm::vec3(105.0f/255.0f, 50.0f/255.0f, 33.0f/255.0f);  // 105, 50, 33: Darker brown
+
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.y);
+
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    float ox = 3000.0f;
+    float oy = 1500.0f;
+    float zoom = 150.0f;
+
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * zoom, (uv.y + oy) * zoom);
+
+    glm::vec3 tmpColor;
+
+    if (abs(noiseValue) < 0.4f) {
+        tmpColor = oceanColor;
+    } else {
+        tmpColor = glm::mix(forestColor, dirtColor, glm::smoothstep(0.15f, 0.96f, noiseValue));
+    }
+
+    color = Color(tmpColor.x, tmpColor.y, tmpColor.z);
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}
+
 // MAKE A SHADER TO DISPLAY PLAIN NOISE
 Fragment noiseFragmentShader(Fragment& fragment) {
     Color color;
@@ -287,9 +323,9 @@ Fragment noiseFragmentShader(Fragment& fragment) {
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
-    float ox = 3200.0f;
-    float oy = 3000.0f;
-    float z = 3000.0f;
+    float ox = 5500.0f;
+    float oy = 6900.0f;
+    float z = 150.0f;
 
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
 

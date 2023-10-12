@@ -11,6 +11,7 @@ enum class Shader {
     Moon,
     Jupiter,
     Uranus,
+    Mars,
     Noise,
 };
 
