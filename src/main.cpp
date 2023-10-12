@@ -225,7 +225,8 @@ int main(int argc, char** argv) {
     Model planetModel;
     planetModel.vertices = planetVBO;
     planetModel.uniforms = planetUniform;
-    planetModel.shader = Shader::Noise;
+    planetModel.shader = Shader::Earth;
+    hasMoon = true;
 
     Model moonModel;
     moonModel.vertices = moonVBO;
