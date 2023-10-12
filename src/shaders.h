@@ -80,13 +80,13 @@ Fragment sunFragmentShader(Fragment& fragment) {
 
     float ox = 3200.0f;
     float oy = 3000.0f;
-    float z = 1800.0f;
+    float z = 3000.0f;
 
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
 
     glm::vec3 tempColor;
 
-    tempColor = glm::mix(secondColor, mainColor,glm::smoothstep(0.16f, 0.6f, abs(noiseValue)));
+    tempColor = glm::mix(secondColor, mainColor,glm::smoothstep(0.3f, 0.5f, abs(noiseValue)));
 //    tempColor = (abs(noiseValue) < 0.6f) ? mainColor : secondColor;
 
     color = Color(tempColor.x, tempColor.y, tempColor.z);
@@ -287,9 +287,9 @@ Fragment noiseFragmentShader(Fragment& fragment) {
     FastNoiseLite noiseGenerator;
     noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
-    float ox = 2000.0f;
-    float oy = 2000.0f;
-    float z = 350.0f;
+    float ox = 3200.0f;
+    float oy = 3000.0f;
+    float z = 3000.0f;
 
     float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * z, (uv.y + oy) * z);
 
