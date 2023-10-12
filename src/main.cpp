@@ -82,6 +82,9 @@ void render() {
                 case Shader::Mars:
                     point(plutoFragmentShader(fragment));
                     break;
+                case Shader::Kepler186f:
+                    point(keplerFragmentShader(fragment));
+                    break;
                 case Shader::Noise:
                     point(noiseFragmentShader(fragment));
                     break;
@@ -143,10 +146,10 @@ Shader getNextPlanetTexture(Shader currentTexture) {
             planetSize = 1.0f;
             return Shader::Mars;
         case Shader::Mars:
-            planet = "Earth";
-            hasMoon = true;
+            planet = "Kepler 186f";
+            hasMoon = false;
             planetSize = 1.0f;
-            return Shader::Earth;
+            return Shader::Kepler186f;
         default:
             planet = "Earth";
             hasMoon = true;

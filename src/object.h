@@ -12,6 +12,7 @@ enum class Shader {
     Jupiter,
     Uranus,
     Mars,
+    Kepler186f,
     Noise,
 };
 

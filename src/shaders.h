@@ -314,6 +314,53 @@ Fragment plutoFragmentShader(Fragment& fragment) {
     return fragment;
 }
 
+Fragment keplerFragmentShader(Fragment& fragment){
+    Color color;
+
+    // 186 152 28
+    glm::vec3 forestColor = glm::vec3(186.0f/255.0f, 152.0f/255.0f, 28.0f/255.0f);  // 186, 152, 28: Yellow
+    // 148 121 22
+    glm::vec3 dirtColor = glm::vec3(148.0f/255.0f, 121.0f/255.0f, 22.0f/255.0f);  // 148, 121, 22: Darker yellow
+    // 250 228 32
+    glm::vec3 oceanColor = glm::vec3(250.0f/255.0f, 228.0f/255.0f, 32.0f/255.0f);  // 250, 228, 32: Yellow
+    glm::vec3 cloudColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    glm::vec2 uv = glm::vec2(fragment.originalPos.x, fragment.originalPos.y);
+
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    float ox = 3200.0f;
+    float oy = 2000.0f;
+    float zoom = 200.0f;
+
+    float noiseValue = noiseGenerator.GetNoise((uv.x + ox) * zoom, (uv.y + oy) * zoom);
+
+    glm::vec3 tmpColor;
+
+    if (noiseValue < 0.05f) {
+        tmpColor = oceanColor;
+    } else {
+        tmpColor = glm::mix(forestColor, dirtColor, glm::smoothstep(0.15f, 0.96f, noiseValue));
+    }
+
+    float oxc = 3500.0f;
+    float oyc = 5000.0f;
+    float zoomc = 300.0f;
+
+    float noiseValueC = noiseGenerator.GetNoise((uv.x + oxc) * zoomc, (uv.y + oyc) * zoomc);
+
+    if (noiseValueC > 0.5f) {
+        tmpColor = cloudColor;
+    }
+
+    color = Color(tmpColor.x, tmpColor.y, tmpColor.z);
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}
+
 // MAKE A SHADER TO DISPLAY PLAIN NOISE
 Fragment noiseFragmentShader(Fragment& fragment) {
     Color color;
