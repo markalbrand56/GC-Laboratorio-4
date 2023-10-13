@@ -14,8 +14,11 @@ Aplican las mismas reglas de no usar texturas ni materiales
 
 ### Planetas
 #### Estrella: *Sol*
+![Sun](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Sun.png)
 
+- Capas: *2*
 #### Planeta rocoso: *Tierra*
+![Earth](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Earth.png)
 - Satélite: *Luna*
 - Capas del shader: *4*
   - Capa 1: *Océanos*
@@ -24,11 +27,15 @@ Aplican las mismas reglas de no usar texturas ni materiales
   - Capa 4: *Atmósfera*
 
 #### Gigante Gaseoso: *Jupiter*
+![Jupiter](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Jupiter.png)
 - Capas del shader: *4*
   - Capa 1-3: *Textura de líneas de Júpiter*
   - Capa 4: *Tormentas de Júpiter*
 
 #### Planetas adicionales:
 - *Urano*
+![Uranus](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Uranus.png)
 - *Marte*
+![Mars](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Mars.png)
 - *Kepler 186f*
+![Kepler186f](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Kepler%20186f.png)
