@@ -37,5 +37,5 @@ Aplican las mismas reglas de no usar texturas ni materiales
 ![Uranus](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Uranus.png)
 - *Marte*
 ![Mars](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Mars.png)
-- *Kepler 186f*
+- [*Kepler 186f*](https://exoplanets.nasa.gov/eyes-on-exoplanets/#/planet/Kepler-186_f/)
 ![Kepler186f](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Kepler%20186f.png)
