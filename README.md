@@ -1,41 +1,16 @@
-# Laboratorio 4: Shaders
+# Proyecto 1: Space Travel
 ## Gráficas por Computadora
 
 ## Rúbrica 
-- [ ] [Criterio subjetivo] 30 puntos según la creatividad de su diseño.
-- [x] 40 puntos según la complejidad de sus shaders que creen (en nuestro sistema, la tierra sería el más complejo y urano el más simple)
-  - Pueden suponer 10 puntos por cada “capa” del shader que afecte el color. 4 capas les daría todos los puntos.
-- [x] 10 puntos por cada planeta extra que diseñen más allá de los 3 requeridos por el ejercicio para un máximo de 30 puntos
-- [ ] 20 puntos por implementar un sistema de anillos en sus planetas gaseosos
-Aplican las mismas reglas de no usar texturas ni materiales
-- [x] 20 puntos por implementar una luna en un planeta rocoso
+- [ ] (Criterio Subjetivo) 30 Puntos por la estética de su sistema completo
+- [ ] (Criterio Subjetivo) 20 Puntos por el performance de la escena completa. No es necesario mantener 60 frames por segundo, es suficiente con que se sienta apropiado.
+- [x] 10 Puntos por cada planeta / estrella / luna en el sistema. Para un máximo de 50 puntos.
+- [ ] 10 Puntos por implementar instant warping a diferentes puntos del sistema solar
+- [ ] 10 Puntos más si el efecto está animado
+- [x] 30 Puntos por renderizar una nave modelada por ustedes que siga a su cámara
+- [x] 10 puntos por crear un skybox que muestre estrellas en el horizonte
+- [ ] 10 puntos por implementar condicionales que eviten que la nave/camara atraviese los elementos de su sistema solar
+- [x] 40 puntos por implementar movimiento 3D para la cámara
+- [ ] 20 puntos por renderizar las orbitas de los planetas
 
 ## Detalles
-
-### Planetas
-#### Estrella: *Sol*
-![Sun](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Sun.png)
-
-- Capas: *2*
-#### Planeta rocoso: *Tierra*
-![Earth](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Earth.png)
-- Satélite: *Luna*
-- Capas del shader: *4*
-  - Capa 1: *Océanos*
-  - Capa 2: *Tierra*
-  - Capa 3: *Nubes*
-  - Capa 4: *Atmósfera*
-
-#### Gigante Gaseoso: *Jupiter*
-![Jupiter](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Jupiter.png)
-- Capas del shader: *4*
-  - Capa 1-3: *Textura de líneas de Júpiter*
-  - Capa 4: *Tormentas de Júpiter*
-
-#### Planetas adicionales:
-- *Urano*
-![Uranus](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Uranus.png)
-- *Marte*
-![Mars](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Mars.png)
-- [*Kepler 186f*](https://exoplanets.nasa.gov/eyes-on-exoplanets/#/planet/Kepler-186_f/)
-![Kepler186f](https://github.com/markalbrand56/GC-Laboratorio-4/blob/master/img/Kepler%20186f.png)
